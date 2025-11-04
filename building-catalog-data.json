@@ -1,0 +1,354 @@
+{
+  "buildingCategories": {
+    "gambrel": {
+      "name": "Gambrel Roof",
+      "description": "Classic barn-style roof with distinctive two-slope design providing maximum headroom and storage",
+      "buildings": [
+        {
+          "id": "portable-barn",
+          "name": "Portable Barn",
+          "roofStyle": "gambrel",
+          "sizes": ["8x8", "8x10", "8x12", "10x12", "10x16"],
+          "description": "Robust structures perfect for equipment, workshops, and livestock shelter",
+          "features": [
+            "Classic American barn design",
+            "Patented soffit ventilation system",
+            "Ridge vents",
+            "Sturdy flooring with treated runners",
+            "Reinforced doors",
+            "Galvanized ring shank nails"
+          ]
+        },
+        {
+          "id": "lofted-barn",
+          "name": "Lofted Barn",
+          "roofStyle": "gambrel",
+          "sizes": ["8x12", "8x16", "8x20", "10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x16", "14x20", "14x24", "14x28", "14x32", "14x36", "14x40"],
+          "description": "Upper storage loft maximizes vertical space utility with ample overhead room",
+          "features": [
+            "Overhead loft for storage",
+            "Classic American barn style",
+            "Patented soffit ventilation system",
+            "Ridge vents",
+            "Treated runners and floor joists",
+            "Reinforced doors",
+            "Galvanized ring shank nails",
+            "Meets International Building Code"
+          ],
+          "optionalUpgrades": [
+            "Wooden or aluminum ramps",
+            "Metal roofing",
+            "Radiant barriers",
+            "Garage doors",
+            "Various window styles",
+            "Decorative hinges (Standard, Decorative, Colonial)"
+          ]
+        },
+        {
+          "id": "side-lofted-barn",
+          "name": "Side Lofted Barn",
+          "roofStyle": "gambrel",
+          "sizes": ["8x12", "8x16", "8x20", "10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40"],
+          "description": "Lofted barn with side-entry configuration for easier access",
+          "features": [
+            "Side-entry configuration",
+            "Overhead loft storage",
+            "Patented ventilation system",
+            "Treated floor joists",
+            "Reinforced doors"
+          ]
+        },
+        {
+          "id": "lofted-barn-cabin",
+          "name": "Lofted Barn Cabin",
+          "roofStyle": "gambrel",
+          "sizes": ["10x16", "10x20", "10x24", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x24", "14x28", "14x32", "14x36", "14x40"],
+          "description": "Lofted barn adapted for residential cabin purposes with living space",
+          "features": [
+            "Residential cabin configuration",
+            "Overhead loft",
+            "Windows for natural lighting",
+            "Sturdy floor construction",
+            "Patented ventilation",
+            "Treated runners and joists"
+          ]
+        },
+        {
+          "id": "corner-porch-lofted-barn-cabin",
+          "name": "Corner Porch Lofted Barn Cabin",
+          "roofStyle": "gambrel",
+          "sizes": ["12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x24", "14x28", "14x32", "14x36", "14x40"],
+          "description": "Lofted barn design with corner porch and cabin features",
+          "features": [
+            "Corner porch addition",
+            "Overhead loft",
+            "Cabin amenities",
+            "Enhanced outdoor living space",
+            "Ventilation system"
+          ]
+        },
+        {
+          "id": "wraparound-porch-lofted-barn-cabin",
+          "name": "Wraparound Porch Lofted Barn Cabin",
+          "roofStyle": "gambrel",
+          "sizes": ["12x24", "12x28", "12x32", "12x36", "12x40", "14x28", "14x32", "14x36", "14x40"],
+          "description": "Premium lofted barn cabin with comprehensive wraparound porch",
+          "features": [
+            "Full wraparound porch",
+            "Overhead loft",
+            "Premium cabin configuration",
+            "Ample gathering space",
+            "Enhanced curb appeal"
+          ]
+        },
+        {
+          "id": "lofted-barn-garage",
+          "name": "Lofted Barn Garage",
+          "roofStyle": "gambrel",
+          "sizes": ["10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "14x16", "14x20", "14x24", "14x28", "14x32", "14x36", "14x40"],
+          "description": "Hybrid garage structure with upper loft storage for vehicles and equipment",
+          "features": [
+            "Garage configuration",
+            "Upper loft storage",
+            "Wide door openings",
+            "Reinforced floor",
+            "Ventilation system"
+          ]
+        }
+      ]
+    },
+    "gable": {
+      "name": "Gable Roof",
+      "description": "Traditional peaked roof design offering excellent water drainage and classic aesthetics",
+      "buildings": [
+        {
+          "id": "utility-shed",
+          "name": "Utility Shed",
+          "roofStyle": "gable",
+          "sizes": ["8x12", "8x16", "8x20", "10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x16", "14x20", "14x24", "14x28", "14x32", "14x36", "14x40", "16x20", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Multi-purpose storage structure for tools and equipment",
+          "features": [
+            "Versatile storage solution",
+            "Sturdy floor construction",
+            "Treated runners and joists",
+            "Reinforced doors",
+            "Ridge vents",
+            "Galvanized nails"
+          ]
+        },
+        {
+          "id": "garden-shed",
+          "name": "Garden Shed",
+          "roofStyle": "gable",
+          "sizes": ["8x12", "8x16", "8x20", "10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x16", "14x20", "14x24", "14x28", "14x32", "14x36", "14x40", "16x20", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Keep your gardening and landscaping essentials organized",
+          "features": [
+            "Garden-focused design",
+            "Organization-friendly interior",
+            "Weather-resistant construction",
+            "Ventilation system",
+            "Treated floor joists"
+          ]
+        },
+        {
+          "id": "dormer-shed",
+          "name": "Dormer Shed",
+          "roofStyle": "gable",
+          "sizes": ["10x12", "10x16", "10x20", "10x24", "12x12", "12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40"],
+          "description": "Shed with dormer window feature for added headroom and natural light",
+          "features": [
+            "Dormer window design",
+            "Enhanced headroom",
+            "Natural lighting",
+            "Attractive curb appeal",
+            "Standard shed features"
+          ]
+        },
+        {
+          "id": "portable-cabin",
+          "name": "Portable Cabin",
+          "roofStyle": "gable",
+          "sizes": ["8x12", "8x16", "10x16", "10x20", "10x24", "14x16", "14x20", "14x24", "14x28", "14x32", "14x40", "16x20", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Comfortable, customizable solution for expanding living space - home offices, guest houses, personal retreats",
+          "features": [
+            "Residential-grade construction",
+            "Windows for natural lighting",
+            "Optional overhead loft",
+            "Sturdy floor construction",
+            "Treated runners and joists",
+            "Reinforced doors",
+            "Porch option available",
+            "Meets International Building Code"
+          ],
+          "optionalUpgrades": [
+            "Metal roofing",
+            "Radiant barriers",
+            "Wooden or aluminum ramps",
+            "Decorative hinges",
+            "Various window styles"
+          ]
+        },
+        {
+          "id": "side-porch-cabin",
+          "name": "Side Porch Cabin",
+          "roofStyle": "gable",
+          "sizes": ["12x16", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x16", "14x20", "14x24", "14x28", "14x32", "14x36", "14x40", "16x16", "16x20", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Cabin configuration with side-mounted covered porch for outdoor living",
+          "features": [
+            "Side-mounted porch",
+            "Covered outdoor space",
+            "Cabin amenities",
+            "Enhanced living area",
+            "Quality construction"
+          ]
+        },
+        {
+          "id": "corner-porch-cabin",
+          "name": "Corner Porch Cabin",
+          "roofStyle": "gable",
+          "sizes": ["12x20", "12x24", "12x28", "12x32", "12x36", "14x24", "14x28", "14x32", "14x36", "14x40", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Enhanced cabin design with corner porch addition for maximum outdoor space",
+          "features": [
+            "Corner porch design",
+            "Maximized porch space",
+            "Cabin features",
+            "Outdoor entertaining area",
+            "Premium construction"
+          ]
+        },
+        {
+          "id": "portable-garage",
+          "name": "Portable Garage",
+          "roofStyle": "gable",
+          "sizes": ["10x20", "10x24", "12x20", "12x24", "12x28", "12x32", "12x36", "12x40", "14x24", "14x28", "14x32", "14x36", "14x40", "16x24", "16x28", "16x32", "16x36", "16x40"],
+          "description": "Vehicle and equipment storage structure with garage door options",
+          "features": [
+            "Vehicle storage",
+            "Large door openings",
+            "Reinforced floor",
+            "Equipment storage",
+            "Weather protection"
+          ]
+        }
+      ]
+    },
+    "lean-to": {
+      "name": "Lean-To Roof",
+      "description": "Single-slope roof design ideal for compact spaces and modern aesthetics",
+      "buildings": [
+        {
+          "id": "mini-shed",
+          "name": "Mini Shed",
+          "roofStyle": "lean-to",
+          "sizes": ["6x12"],
+          "description": "Compact storage solution for small spaces and tight areas",
+          "features": [
+            "Ultra-compact design",
+            "Space-efficient",
+            "Simple construction",
+            "Cost-effective",
+            "Basic storage needs"
+          ]
+        },
+        {
+          "id": "urban-shed",
+          "name": "Urban Shed",
+          "roofStyle": "lean-to",
+          "sizes": ["8x12", "8x16", "8x20", "10x12", "10x16", "10x20"],
+          "description": "Contemporary design optimized for residential neighborhoods and modern aesthetics",
+          "features": [
+            "Modern design",
+            "Neighborhood-friendly",
+            "Contemporary aesthetics",
+            "Compact footprint",
+            "Urban optimization"
+          ]
+        }
+      ]
+    },
+    "economy": {
+      "name": "Economy Series",
+      "description": "Budget-friendly options without sacrificing quality",
+      "buildings": [
+        {
+          "id": "economy-shed",
+          "name": "Economy Shed (8x12)",
+          "roofStyle": "gable",
+          "sizes": ["8x8", "8x10", "8x12", "10x16"],
+          "defaultSize": "8x12",
+          "description": "Better quality and more space for a lower price - budget-friendly storage option",
+          "features": [
+            "Cost-effective solution",
+            "Simple, clean lines",
+            "Distinctive trim",
+            "Patented soffit ventilation",
+            "Sturdy flooring",
+            "Treated runners and joists",
+            "Ridge vents",
+            "Galvanized ring shank nails",
+            "Reinforced doors",
+            "Meets International Building Code"
+          ],
+          "notes": "Primary offering is 8x12, with limited additional sizes available by region"
+        }
+      ]
+    }
+  },
+  "standardFeatures": {
+    "construction": [
+      "Patented soffit ventilation system",
+      "Ridge vents for proper airflow",
+      "Sturdy flooring",
+      "Treated runners and floor joists",
+      "Reinforced doors",
+      "Galvanized ring shank nails",
+      "International Building Code compliant"
+    ],
+    "quality": [
+      "Quality Management System (QMS) certified",
+      "Durable weather-resistant construction",
+      "Warranty protection",
+      "Customer support"
+    ]
+  },
+  "commonUpgrades": [
+    {
+      "category": "Ramps",
+      "options": ["Wooden ramps", "Aluminum ramps"]
+    },
+    {
+      "category": "Roofing",
+      "options": ["Standard shingles", "Metal roofing", "Radiant barriers"]
+    },
+    {
+      "category": "Doors",
+      "options": ["Standard doors", "Garage doors", "Wide doors"]
+    },
+    {
+      "category": "Hinges",
+      "options": ["Standard hinges", "Decorative hinges", "Colonial hinges"]
+    },
+    {
+      "category": "Windows",
+      "options": ["Standard windows", "Various window styles"]
+    },
+    {
+      "category": "Colors",
+      "options": ["Unlimited paint combinations", "Urethane siding colors", "Coordinating trim colors"]
+    }
+  ],
+  "companyInfo": {
+    "name": "Graceland Portable Buildings",
+    "phone": "(888) 472-2304",
+    "address": "6807 U.S. 62 Bardwell, KY 42023",
+    "website": "gracelandportablebuildings.com",
+    "services": [
+      "Custom building design",
+      "Shed Builder configurator tool",
+      "Rent-to-own payment options",
+      "Pre-owned units available",
+      "Delivery and installation",
+      "Authorized dealer network"
+    ]
+  }
+}
