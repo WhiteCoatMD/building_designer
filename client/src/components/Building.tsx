@@ -42,7 +42,19 @@ export const Building = () => {
   const roofHeight = roofStyle === 'gambrel' ? h * 0.6 : h * 0.6;
 
   // Gambrel roof dimensions (barn style)
-  const gambelBreakHeight = h * 0.25; // Where lower and upper roof meet (shorter lower section)
+  const gambelBreakHeight = h * 0.3; // Where lower and upper roof meet
+
+  // Calculate proper roof geometry
+  // Lower section: from wall edge (±w/2) to break point (±w/4)
+  const lowerHorizontalSpan = w / 4; // horizontal distance covered by lower section
+  const lowerSectionLength = Math.sqrt(lowerHorizontalSpan * lowerHorizontalSpan + gambelBreakHeight * gambelBreakHeight);
+  const lowerAngle = Math.atan2(gambelBreakHeight, lowerHorizontalSpan); // angle from horizontal
+
+  // Upper section: from break point (±w/4) to peak (0)
+  const upperHorizontalSpan = w / 4; // horizontal distance covered by upper section
+  const upperVerticalSpan = roofHeight - gambelBreakHeight;
+  const upperSectionLength = Math.sqrt(upperHorizontalSpan * upperHorizontalSpan + upperVerticalSpan * upperVerticalSpan);
+  const upperAngle = Math.atan2(upperVerticalSpan, upperHorizontalSpan);
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -90,43 +102,43 @@ export const Building = () => {
       {/* Roof - Gambrel Style (Barn) */}
       {roofStyle === 'gambrel' && (
         <>
-          {/* Left Lower Section - Steep slope (shorter) */}
+          {/* Left Lower Section - from wall edge to break point */}
           <mesh
-            position={[-w / 3, h + gambelBreakHeight / 2, 0]}
-            rotation={[0, 0, Math.PI / 2.5]} // ~72 degrees - very steep
+            position={[-3 * w / 8, h + gambelBreakHeight / 2, 0]}
+            rotation={[0, 0, lowerAngle]}
             castShadow
           >
-            <boxGeometry args={[gambelBreakHeight * 1.6, 0.2, d + 0.6]} />
+            <boxGeometry args={[lowerSectionLength, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
 
-          {/* Right Lower Section - Steep slope (shorter) */}
+          {/* Right Lower Section - from wall edge to break point */}
           <mesh
-            position={[w / 3, h + gambelBreakHeight / 2, 0]}
-            rotation={[0, 0, -Math.PI / 2.5]} // ~-72 degrees - very steep
+            position={[3 * w / 8, h + gambelBreakHeight / 2, 0]}
+            rotation={[0, 0, -lowerAngle]}
             castShadow
           >
-            <boxGeometry args={[gambelBreakHeight * 1.6, 0.2, d + 0.6]} />
+            <boxGeometry args={[lowerSectionLength, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
 
-          {/* Left Upper Section - Shallow slope (wider/longer) */}
+          {/* Left Upper Section - from break point to peak */}
           <mesh
-            position={[-w / 6, h + gambelBreakHeight + (roofHeight - gambelBreakHeight) / 2, 0]}
-            rotation={[0, 0, Math.PI / 7]} // ~25 degrees - shallow
+            position={[-w / 8, h + gambelBreakHeight + upperVerticalSpan / 2, 0]}
+            rotation={[0, 0, upperAngle]}
             castShadow
           >
-            <boxGeometry args={[(roofHeight - gambelBreakHeight) * 2, 0.2, d + 0.6]} />
+            <boxGeometry args={[upperSectionLength, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
 
-          {/* Right Upper Section - Shallow slope (wider/longer) */}
+          {/* Right Upper Section - from break point to peak */}
           <mesh
-            position={[w / 6, h + gambelBreakHeight + (roofHeight - gambelBreakHeight) / 2, 0]}
-            rotation={[0, 0, -Math.PI / 7]} // ~-25 degrees - shallow
+            position={[w / 8, h + gambelBreakHeight + upperVerticalSpan / 2, 0]}
+            rotation={[0, 0, -upperAngle]}
             castShadow
           >
-            <boxGeometry args={[(roofHeight - gambelBreakHeight) * 2, 0.2, d + 0.6]} />
+            <boxGeometry args={[upperSectionLength, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
         </>
