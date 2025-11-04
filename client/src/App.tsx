@@ -1,15 +1,7 @@
 import { Building3D } from './components/Building3D';
 import { ControlPanel } from './components/ControlPanel';
-import { useEffect } from 'react';
-import { useBuildingStore } from './store/buildingStore';
 
 function App() {
-  const calculatePrice = useBuildingStore((state) => state.calculatePrice);
-
-  // Calculate initial price on mount
-  useEffect(() => {
-    calculatePrice();
-  }, [calculatePrice]);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-gray-100">
@@ -17,12 +9,12 @@ function App() {
       <header className="bg-blue-600 text-white py-4 px-6 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Portable Building Designer</h1>
-            <p className="text-sm text-blue-100">Design your perfect shed or cabin</p>
+            <h1 className="text-2xl font-bold">Graceland Portable Buildings</h1>
+            <p className="text-sm text-blue-100">Design your perfect building - Barns, Sheds, Cabins & More</p>
           </div>
           <div className="text-right">
-            <div className="text-xs text-blue-100">Need help?</div>
-            <div className="text-lg font-semibold">1-800-SHEDS-4U</div>
+            <div className="text-xs text-blue-100">Call for a quote</div>
+            <div className="text-lg font-semibold">(888) 472-2304</div>
           </div>
         </div>
       </header>

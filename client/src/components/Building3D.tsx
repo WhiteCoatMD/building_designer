@@ -1,8 +1,6 @@
-import { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import { Building } from './Building';
-import { useBuildingStore } from '../store/buildingStore';
 
 export const Building3D = () => {
   return (

@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useBuildingStore } from '../store/buildingStore';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
 
 export const Building = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -9,7 +8,6 @@ export const Building = () => {
     width,
     depth,
     wallHeight,
-    roofStyle,
     doors,
     windows,
     doorWidth,
@@ -17,7 +15,10 @@ export const Building = () => {
     roofColor,
     trimColor,
     doorColor,
+    getRoofStyle,
   } = useBuildingStore();
+
+  const roofStyle = getRoofStyle();
 
   // Convert feet to 3D units (1 foot = 0.5 units for better visualization)
   const w = width * 0.5;
@@ -133,48 +134,16 @@ export const Building = () => {
         </>
       )}
 
-      {/* Roof - A-Frame Style */}
-      {roofStyle === 'a-frame' && (
-        <>
-          <mesh
-            position={[-w / 4, h + roofHeight / 2, 0]}
-            rotation={[0, 0, Math.PI / 4]}
-            castShadow
-          >
-            <boxGeometry args={[w / 2 + 1.5, 0.15, d + 0.5]} />
-            <meshStandardMaterial color={roofColor} />
-          </mesh>
-          <mesh
-            position={[w / 4, h + roofHeight / 2, 0]}
-            rotation={[0, 0, -Math.PI / 4]}
-            castShadow
-          >
-            <boxGeometry args={[w / 2 + 1.5, 0.15, d + 0.5]} />
-            <meshStandardMaterial color={roofColor} />
-          </mesh>
-        </>
-      )}
-
-      {/* Roof - Barn Style */}
-      {roofStyle === 'barn' && (
-        <>
-          <mesh
-            position={[-w / 4, h + roofHeight * 0.4, 0]}
-            rotation={[0, 0, Math.PI / 5]}
-            castShadow
-          >
-            <boxGeometry args={[w / 2 + 0.8, 0.15, d + 0.5]} />
-            <meshStandardMaterial color={roofColor} />
-          </mesh>
-          <mesh
-            position={[w / 4, h + roofHeight * 0.4, 0]}
-            rotation={[0, 0, -Math.PI / 5]}
-            castShadow
-          >
-            <boxGeometry args={[w / 2 + 0.8, 0.15, d + 0.5]} />
-            <meshStandardMaterial color={roofColor} />
-          </mesh>
-        </>
+      {/* Roof - Lean-To Style */}
+      {roofStyle === 'lean-to' && (
+        <mesh
+          position={[0, h + roofHeight / 2, 0]}
+          rotation={[0, 0, Math.PI / 8]}
+          castShadow
+        >
+          <boxGeometry args={[w + 1, 0.15, d + 0.5]} />
+          <meshStandardMaterial color={roofColor} />
+        </mesh>
       )}
 
       {/* Door(s) */}

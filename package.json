@@ -4,6 +4,7 @@
   "description": "3D Building Designer Application",
   "scripts": {
     "install-all": "cd client && npm install && cd ../server && npm install",
+    "postinstall": "cd client && npm install",
     "dev": "concurrently \"cd server && npm start\" \"cd client && npm run dev\"",
     "start-server": "cd server && npm start",
     "start-client": "cd client && npm run dev",

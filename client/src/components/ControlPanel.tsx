@@ -1,14 +1,23 @@
 import { useState } from 'react';
-import { useBuildingStore, BuildingStyle, RoofStyle } from '../store/buildingStore';
+import { useBuildingStore } from '../store/buildingStore';
 import { HexColorPicker } from 'react-colorful';
+import catalogData from '../data/building-catalog.json';
+import type { BuildingCatalog, CategoryKey } from '../types/catalog';
+
+const catalog = catalogData as BuildingCatalog;
 
 export const ControlPanel = () => {
   const {
     width,
     depth,
     wallHeight,
-    buildingStyle,
-    roofStyle,
+    selectedCategory,
+    selectedBuildingId,
+    hasLoft,
+    porchType,
+    hasGarageDoor,
+    hasMetalRoof,
+    hasDormer,
     doors,
     windows,
     doorWidth,
@@ -17,11 +26,17 @@ export const ControlPanel = () => {
     trimColor,
     doorColor,
     totalPrice,
-    setWidth,
-    setDepth,
+    getSelectedBuilding,
+    getAvailableSizes,
     setWallHeight,
-    setBuildingStyle,
-    setRoofStyle,
+    setCategory,
+    setBuildingType,
+    setSize,
+    setHasLoft,
+    setPorchType,
+    setHasGarageDoor,
+    setHasMetalRoof,
+    setHasDormer,
     setDoors,
     setWindows,
     setDoorWidth,
@@ -35,18 +50,25 @@ export const ControlPanel = () => {
   const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null);
   const [showQuoteForm, setShowQuoteForm] = useState(false);
 
-  const buildingStyles: { value: BuildingStyle; label: string }[] = [
-    { value: 'lofted-barn', label: 'Lofted Barn' },
-    { value: 'utility', label: 'Utility Shed' },
-    { value: 'cottage', label: 'Cottage' },
-    { value: 'cabin', label: 'Cabin' },
+  const selectedBuilding = getSelectedBuilding();
+  const availableSizes = getAvailableSizes();
+  const currentSize = `${width}x${depth}`;
+
+  const categories: { key: CategoryKey; label: string }[] = [
+    { key: 'gambrel', label: 'Gambrel Roof' },
+    { key: 'gable', label: 'Gable Roof' },
+    { key: 'lean-to', label: 'Lean-To' },
+    { key: 'economy', label: 'Economy' },
   ];
 
-  const roofStyles: { value: RoofStyle; label: string }[] = [
-    { value: 'gambrel', label: 'Gambrel' },
-    { value: 'gable', label: 'Gable' },
-    { value: 'a-frame', label: 'A-Frame' },
-    { value: 'barn', label: 'Barn' },
+  const currentCategory = catalog.buildingCategories[selectedCategory];
+  const buildings = currentCategory?.buildings || [];
+
+  const porchTypes: { value: 'none' | 'side' | 'corner' | 'wraparound'; label: string }[] = [
+    { value: 'none', label: 'No Porch' },
+    { value: 'side', label: 'Side Porch (+$1,200)' },
+    { value: 'corner', label: 'Corner Porch (+$1,800)' },
+    { value: 'wraparound', label: 'Wraparound (+$2,800)' },
   ];
 
   const ColorButton = ({
@@ -84,55 +106,111 @@ export const ControlPanel = () => {
     <div className="bg-white p-6 overflow-y-auto h-full shadow-lg">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Building Designer</h2>
-        <p className="text-sm text-gray-600">Customize your portable building</p>
+        <p className="text-sm text-gray-600">
+          Powered by Graceland Portable Buildings catalog
+        </p>
       </div>
 
       {/* Price Display */}
       <div className="bg-blue-600 text-white p-4 rounded-lg mb-6 shadow-md">
         <div className="text-sm font-medium mb-1">Estimated Price</div>
         <div className="text-3xl font-bold">${totalPrice.toLocaleString()}</div>
-        <div className="text-xs mt-1 opacity-90">Price may vary by location</div>
+        <div className="text-xs mt-1 opacity-90">
+          {width} × {depth} ft = {width * depth} sq ft
+        </div>
       </div>
 
-      {/* Dimensions */}
+      {/* Roof Style / Category Selection */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-          Dimensions
+          1. Select Roof Style
         </h3>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Width: {width} ft
-          </label>
-          <input
-            type="range"
-            min="8"
-            max="16"
-            step="2"
-            value={width}
-            onChange={(e) => setWidth(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+        <div className="grid grid-cols-2 gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat.key}
+              onClick={() => setCategory(cat.key)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                selectedCategory === cat.key
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
+        <p className="text-xs text-gray-600 mt-2">
+          {currentCategory?.description}
+        </p>
+      </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Depth: {depth} ft
-          </label>
-          <input
-            type="range"
-            min="8"
-            max="24"
-            step="2"
-            value={depth}
-            onChange={(e) => setDepth(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+      {/* Building Type Selection */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
+          2. Select Building Type
+        </h3>
+        <div className="space-y-2">
+          {buildings.map((building) => (
+            <button
+              key={building.id}
+              onClick={() => setBuildingType(building.id)}
+              className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all ${
+                selectedBuildingId === building.id
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <div className="font-medium">{building.name}</div>
+              <div className={`text-xs mt-1 ${
+                selectedBuildingId === building.id ? 'text-blue-100' : 'text-gray-500'
+              }`}>
+                {building.sizes.length} sizes available
+              </div>
+            </button>
+          ))}
         </div>
+        {selectedBuilding && (
+          <div className="mt-3 p-3 bg-gray-50 rounded text-xs text-gray-700">
+            <div className="font-medium mb-1">{selectedBuilding.name}</div>
+            <div>{selectedBuilding.description}</div>
+          </div>
+        )}
+      </div>
 
+      {/* Size Selection */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
+          3. Select Size
+        </h3>
+        <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+          {availableSizes.map((sizeStr) => (
+            <button
+              key={sizeStr}
+              onClick={() => setSize(sizeStr)}
+              className={`px-3 py-2 rounded text-sm font-medium transition-all ${
+                currentSize === sizeStr
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {sizeStr}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 text-sm text-gray-600">
+          Current: <strong>{width} × {depth} ft</strong> ({width * depth} sq ft)
+        </div>
+      </div>
+
+      {/* Wall Height */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
+          Wall Height
+        </h3>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1 text-gray-700">
-            Wall Height: {wallHeight} ft
+            Height: {wallHeight} ft
           </label>
           <input
             type="range"
@@ -146,48 +224,93 @@ export const ControlPanel = () => {
         </div>
       </div>
 
-      {/* Style Selection */}
+      {/* Optional Features */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-          Building Style
+          4. Optional Features
         </h3>
-        <div className="grid grid-cols-2 gap-2">
-          {buildingStyles.map((style) => (
-            <button
-              key={style.value}
-              onClick={() => setBuildingStyle(style.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                buildingStyle === style.value
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {style.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Roof Style */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-          Roof Style
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-          {roofStyles.map((style) => (
-            <button
-              key={style.value}
-              onClick={() => setRoofStyle(style.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                roofStyle === style.value
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+        {/* Loft */}
+        {(selectedCategory === 'gambrel' || selectedCategory === 'gable') && (
+          <label className="flex items-center justify-between mb-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
+            <div>
+              <div className="font-medium text-sm">Add Loft Storage</div>
+              <div className="text-xs text-gray-600">+$800 for overhead storage</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={hasLoft}
+              onChange={(e) => setHasLoft(e.target.checked)}
+              className="w-5 h-5"
+            />
+          </label>
+        )}
+
+        {/* Porch */}
+        {selectedBuildingId.includes('cabin') && (
+          <div className="mb-3">
+            <label className="block text-sm font-medium mb-2 text-gray-700">
+              Porch Type
+            </label>
+            <select
+              value={porchType}
+              onChange={(e) => setPorchType(e.target.value as any)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              {style.label}
-            </button>
-          ))}
-        </div>
+              {porchTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Garage Door */}
+        {(selectedBuildingId.includes('garage') || selectedCategory === 'gable') && (
+          <label className="flex items-center justify-between mb-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
+            <div>
+              <div className="font-medium text-sm">Garage Door</div>
+              <div className="text-xs text-gray-600">+$600 upgrade</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={hasGarageDoor}
+              onChange={(e) => setHasGarageDoor(e.target.checked)}
+              className="w-5 h-5"
+            />
+          </label>
+        )}
+
+        {/* Metal Roof */}
+        <label className="flex items-center justify-between mb-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
+          <div>
+            <div className="font-medium text-sm">Metal Roofing</div>
+            <div className="text-xs text-gray-600">+${(width * depth * 3).toLocaleString()} premium upgrade</div>
+          </div>
+          <input
+            type="checkbox"
+            checked={hasMetalRoof}
+            onChange={(e) => setHasMetalRoof(e.target.checked)}
+            className="w-5 h-5"
+          />
+        </label>
+
+        {/* Dormer */}
+        {selectedCategory === 'gable' && (
+          <label className="flex items-center justify-between mb-3 p-3 bg-gray-50 rounded cursor-pointer hover:bg-gray-100">
+            <div>
+              <div className="font-medium text-sm">Dormer Window</div>
+              <div className="text-xs text-gray-600">+$900 for added light & headroom</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={hasDormer}
+              onChange={(e) => setHasDormer(e.target.checked)}
+              className="w-5 h-5"
+            />
+          </label>
+        )}
       </div>
 
       {/* Doors & Windows */}
@@ -341,8 +464,14 @@ const QuoteForm = ({
             width: config.width,
             depth: config.depth,
             wallHeight: config.wallHeight,
-            buildingStyle: config.buildingStyle,
-            roofStyle: config.roofStyle,
+            selectedCategory: config.selectedCategory,
+            selectedBuildingId: config.selectedBuildingId,
+            hasLoft: config.hasLoft,
+            hasPorch: config.hasPorch,
+            porchType: config.porchType,
+            hasGarageDoor: config.hasGarageDoor,
+            hasMetalRoof: config.hasMetalRoof,
+            hasDormer: config.hasDormer,
             doors: config.doors,
             windows: config.windows,
             doorWidth: config.doorWidth,
