@@ -6,6 +6,19 @@ const catalog = catalogData as BuildingCatalog;
 
 export type { RoofStyle };
 
+export type DoorType = '48-solid-shop' | '72-double-shop' | '36-solid-entry' | '36-9lite-entry';
+export type WindowSize = '2x3' | '3x3';
+
+export interface DoorConfig {
+  type: DoorType;
+  count: number;
+}
+
+export interface WindowConfig {
+  size: WindowSize;
+  count: number;
+}
+
 export interface BuildingConfig {
   // Dimensions
   width: number;
@@ -24,10 +37,9 @@ export interface BuildingConfig {
   hasMetalRoof: boolean;
   hasDormer: boolean;
 
-  // Doors & Windows
-  doors: number;
-  windows: number;
-  doorWidth: number;
+  // Doors & Windows (new system)
+  doorConfigs: DoorConfig[];
+  windowConfigs: WindowConfig[];
 
   // Colors
   wallColor: string;
@@ -66,9 +78,10 @@ interface BuildingStore extends BuildingConfig {
   setHasDormer: (hasDormer: boolean) => void;
 
   // Doors & Windows
-  setDoors: (count: number) => void;
-  setWindows: (count: number) => void;
-  setDoorWidth: (width: number) => void;
+  addDoor: (type: DoorType) => void;
+  removeDoor: (index: number) => void;
+  addWindow: (size: WindowSize) => void;
+  removeWindow: (index: number) => void;
 
   // Colors
   setWallColor: (color: string) => void;
@@ -83,7 +96,7 @@ interface BuildingStore extends BuildingConfig {
 const DEFAULT_CONFIG: BuildingConfig = {
   width: 12,
   depth: 20,
-  wallHeight: 7,
+  wallHeight: 7.75, // Fixed at 93 inches
   selectedCategory: 'gambrel',
   selectedBuildingId: 'lofted-barn',
   hasLoft: true,
@@ -92,9 +105,12 @@ const DEFAULT_CONFIG: BuildingConfig = {
   hasGarageDoor: false,
   hasMetalRoof: false,
   hasDormer: false,
-  doors: 1,
-  windows: 2,
-  doorWidth: 6,
+  doorConfigs: [
+    { type: '72-double-shop', count: 1 }
+  ],
+  windowConfigs: [
+    { size: '3x3', count: 2 }
+  ],
   wallColor: '#8B7355',
   roofColor: '#2C3E50',
   trimColor: '#FFFFFF',
@@ -211,18 +227,27 @@ export const useBuildingStore = create<BuildingStore>((set, get) => ({
   },
 
   // Doors & Windows
-  setDoors: (doors) => {
-    set({ doors });
+  addDoor: (type) => {
+    const state = get();
+    set({ doorConfigs: [...state.doorConfigs, { type, count: 1 }] });
     get().calculatePrice();
   },
 
-  setWindows: (windows) => {
-    set({ windows });
+  removeDoor: (index) => {
+    const state = get();
+    set({ doorConfigs: state.doorConfigs.filter((_, i) => i !== index) });
     get().calculatePrice();
   },
 
-  setDoorWidth: (doorWidth) => {
-    set({ doorWidth });
+  addWindow: (size) => {
+    const state = get();
+    set({ windowConfigs: [...state.windowConfigs, { size, count: 1 }] });
+    get().calculatePrice();
+  },
+
+  removeWindow: (index) => {
+    const state = get();
+    set({ windowConfigs: state.windowConfigs.filter((_, i) => i !== index) });
     get().calculatePrice();
   },
 
@@ -289,14 +314,25 @@ export const useBuildingStore = create<BuildingStore>((set, get) => ({
       price += 900; // Dormer window addition
     }
 
-    // Doors and windows
-    price += state.doors * 300;
-    price += state.windows * 180;
+    // Doors - pricing by type
+    state.doorConfigs.forEach((doorConfig) => {
+      const doorPricing = {
+        '48-solid-shop': 350,
+        '72-double-shop': 600,
+        '36-solid-entry': 300,
+        '36-9lite-entry': 350,
+      };
+      price += doorPricing[doorConfig.type] * doorConfig.count;
+    });
 
-    // Wide doors
-    if (state.doorWidth > 4) {
-      price += (state.doorWidth - 4) * 120;
-    }
+    // Windows - pricing by size
+    state.windowConfigs.forEach((windowConfig) => {
+      const windowPricing = {
+        '2x3': 150,
+        '3x3': 200,
+      };
+      price += windowPricing[windowConfig.size] * windowConfig.count;
+    });
 
     set({ totalPrice: Math.round(price) });
   },

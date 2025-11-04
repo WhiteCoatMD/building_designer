@@ -8,9 +8,8 @@ export const Building = () => {
     width,
     depth,
     wallHeight,
-    doors,
-    windows,
-    doorWidth,
+    doorConfigs,
+    windowConfigs,
     wallColor,
     roofColor,
     trimColor,
@@ -20,13 +19,30 @@ export const Building = () => {
 
   const roofStyle = getRoofStyle();
 
+  // Door dimensions in feet (converted to 3D units)
+  const doorDimensions = {
+    '48-solid-shop': { width: 4, height: 7 }, // 48 inches = 4 ft
+    '72-double-shop': { width: 6, height: 7 }, // 72 inches = 6 ft
+    '36-solid-entry': { width: 3, height: 6.5 }, // 36 inches = 3 ft
+    '36-9lite-entry': { width: 3, height: 6.5 },
+  };
+
+  // Window dimensions in feet
+  const windowDimensions = {
+    '2x3': { width: 2, height: 3 },
+    '3x3': { width: 3, height: 3 },
+  };
+
   // Convert feet to 3D units (1 foot = 0.5 units for better visualization)
   const w = width * 0.5;
   const d = depth * 0.5;
   const h = wallHeight * 0.5;
 
   // Roof height based on style
-  const roofHeight = roofStyle === 'gambrel' ? h * 0.8 : h * 0.6;
+  const roofHeight = roofStyle === 'gambrel' ? h * 0.6 : h * 0.6;
+
+  // Gambrel roof dimensions (barn style)
+  const gambelBreakHeight = h * 0.25; // Where lower and upper roof meet (shorter lower section)
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
@@ -71,42 +87,46 @@ export const Building = () => {
         <meshStandardMaterial color={trimColor} />
       </mesh>
 
-      {/* Roof - Gambrel Style */}
+      {/* Roof - Gambrel Style (Barn) */}
       {roofStyle === 'gambrel' && (
         <>
-          {/* Lower roof sections - steeper angle */}
+          {/* Left Lower Section - Steep slope (shorter) */}
           <mesh
-            position={[-w / 4, h + roofHeight * 0.3, 0]}
-            rotation={[0, 0, Math.PI / 6]}
+            position={[-w / 3, h + gambelBreakHeight / 2, 0]}
+            rotation={[0, 0, Math.PI / 2.5]} // ~72 degrees - very steep
             castShadow
           >
-            <boxGeometry args={[w / 2 + 0.5, 0.15, d + 0.5]} />
-            <meshStandardMaterial color={roofColor} />
-          </mesh>
-          <mesh
-            position={[w / 4, h + roofHeight * 0.3, 0]}
-            rotation={[0, 0, -Math.PI / 6]}
-            castShadow
-          >
-            <boxGeometry args={[w / 2 + 0.5, 0.15, d + 0.5]} />
+            <boxGeometry args={[gambelBreakHeight * 1.6, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
 
-          {/* Upper roof sections - shallower angle */}
+          {/* Right Lower Section - Steep slope (shorter) */}
           <mesh
-            position={[-w / 8, h + roofHeight * 0.7, 0]}
-            rotation={[0, 0, Math.PI / 9]}
+            position={[w / 3, h + gambelBreakHeight / 2, 0]}
+            rotation={[0, 0, -Math.PI / 2.5]} // ~-72 degrees - very steep
             castShadow
           >
-            <boxGeometry args={[w / 4 + 0.3, 0.15, d + 0.5]} />
+            <boxGeometry args={[gambelBreakHeight * 1.6, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
+
+          {/* Left Upper Section - Shallow slope (wider/longer) */}
           <mesh
-            position={[w / 8, h + roofHeight * 0.7, 0]}
-            rotation={[0, 0, -Math.PI / 9]}
+            position={[-w / 6, h + gambelBreakHeight + (roofHeight - gambelBreakHeight) / 2, 0]}
+            rotation={[0, 0, Math.PI / 7]} // ~25 degrees - shallow
             castShadow
           >
-            <boxGeometry args={[w / 4 + 0.3, 0.15, d + 0.5]} />
+            <boxGeometry args={[(roofHeight - gambelBreakHeight) * 2, 0.2, d + 0.6]} />
+            <meshStandardMaterial color={roofColor} />
+          </mesh>
+
+          {/* Right Upper Section - Shallow slope (wider/longer) */}
+          <mesh
+            position={[w / 6, h + gambelBreakHeight + (roofHeight - gambelBreakHeight) / 2, 0]}
+            rotation={[0, 0, -Math.PI / 7]} // ~-25 degrees - shallow
+            castShadow
+          >
+            <boxGeometry args={[(roofHeight - gambelBreakHeight) * 2, 0.2, d + 0.6]} />
             <meshStandardMaterial color={roofColor} />
           </mesh>
         </>
@@ -146,73 +166,125 @@ export const Building = () => {
         </mesh>
       )}
 
-      {/* Door(s) */}
-      {Array.from({ length: doors }).map((_, i) => {
-        const doorW = doorWidth * 0.5;
-        const doorH = 3.5;
-        const spacing = w / (doors + 1);
-        const xPos = -w / 2 + spacing * (i + 1);
+      {/* Door(s) - New type-based system */}
+      {doorConfigs.flatMap((doorConfig, configIndex) =>
+        Array.from({ length: doorConfig.count }).map((_, countIndex) => {
+          const index = configIndex + countIndex;
+          const totalDoors = doorConfigs.reduce((sum, cfg) => sum + cfg.count, 0);
+          const doorDims = doorDimensions[doorConfig.type];
+          const doorW = doorDims.width * 0.5;
+          const doorH = doorDims.height * 0.5;
+          const spacing = w / (totalDoors + 1);
+          const xPos = -w / 2 + spacing * (index + 1);
+          const is9Lite = doorConfig.type === '36-9lite-entry';
+          const isDouble = doorConfig.type === '72-double-shop';
 
-        return (
-          <group key={`door-${i}`}>
-            {/* Door opening (dark recess) */}
-            <mesh position={[xPos, doorH / 2, d / 2 + 0.05]} castShadow>
-              <boxGeometry args={[doorW, doorH, 0.3]} />
-              <meshStandardMaterial color="#1a1a1a" />
-            </mesh>
-            {/* Door itself */}
-            <mesh position={[xPos, doorH / 2, d / 2 + 0.15]} castShadow>
-              <boxGeometry args={[doorW - 0.1, doorH - 0.1, 0.15]} />
-              <meshStandardMaterial color={doorColor} />
-            </mesh>
-            {/* Door handle */}
-            <mesh position={[xPos + doorW / 3, doorH / 2, d / 2 + 0.23]} castShadow>
-              <boxGeometry args={[0.1, 0.3, 0.1]} />
-              <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
-            </mesh>
-          </group>
-        );
-      })}
+          return (
+            <group key={`door-${configIndex}-${countIndex}`}>
+              {/* Door opening (dark recess) */}
+              <mesh position={[xPos, doorH / 2, d / 2 + 0.05]} castShadow>
+                <boxGeometry args={[doorW, doorH, 0.3]} />
+                <meshStandardMaterial color="#1a1a1a" />
+              </mesh>
+              {/* Door itself */}
+              <mesh position={[xPos, doorH / 2, d / 2 + 0.15]} castShadow>
+                <boxGeometry args={[doorW - 0.1, doorH - 0.1, 0.15]} />
+                <meshStandardMaterial color={doorColor} />
+              </mesh>
+              {/* Door handle(s) */}
+              {!isDouble && (
+                <mesh position={[xPos + doorW / 3, doorH / 2, d / 2 + 0.23]} castShadow>
+                  <boxGeometry args={[0.1, 0.3, 0.1]} />
+                  <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+                </mesh>
+              )}
+              {isDouble && (
+                <>
+                  <mesh position={[xPos - doorW / 4, doorH / 2, d / 2 + 0.23]} castShadow>
+                    <boxGeometry args={[0.1, 0.3, 0.1]} />
+                    <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+                  </mesh>
+                  <mesh position={[xPos + doorW / 4, doorH / 2, d / 2 + 0.23]} castShadow>
+                    <boxGeometry args={[0.1, 0.3, 0.1]} />
+                    <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
+                  </mesh>
+                </>
+              )}
+              {/* 9-lite windows on door */}
+              {is9Lite && (
+                <group>
+                  {Array.from({ length: 9 }).map((_, liteIndex) => {
+                    const row = Math.floor(liteIndex / 3);
+                    const col = liteIndex % 3;
+                    const liteW = doorW / 4;
+                    const liteH = doorH / 5;
+                    const liteX = xPos + (col - 1) * (liteW * 0.8);
+                    const liteY = doorH * 0.7 - row * (liteH * 0.9);
+                    return (
+                      <mesh key={liteIndex} position={[liteX, liteY, d / 2 + 0.16]}>
+                        <boxGeometry args={[liteW * 0.6, liteH * 0.7, 0.05]} />
+                        <meshPhysicalMaterial
+                          color="#87CEEB"
+                          transparent
+                          opacity={0.7}
+                          metalness={0.1}
+                          roughness={0.1}
+                          transmission={0.9}
+                        />
+                      </mesh>
+                    );
+                  })}
+                </group>
+              )}
+            </group>
+          );
+        })
+      )}
 
-      {/* Windows */}
-      {Array.from({ length: windows }).map((_, i) => {
-        const windowW = 1.5;
-        const windowH = 1.5;
-        const spacing = w / (windows + 1);
-        const xPos = -w / 2 + spacing * (i + 1);
-        const yPos = h * 0.6;
+      {/* Windows - New size-based system */}
+      {windowConfigs.flatMap((windowConfig, configIndex) =>
+        Array.from({ length: windowConfig.count }).map((_, countIndex) => {
+          const index = configIndex + countIndex;
+          const totalWindows = windowConfigs.reduce((sum, cfg) => sum + cfg.count, 0);
+          const windowDims = windowDimensions[windowConfig.size];
+          const windowW = windowDims.width * 0.5;
+          const windowH = windowDims.height * 0.5;
+          const spacing = w / (totalWindows + 1);
+          const xPos = -w / 2 + spacing * (index + 1);
+          const yPos = h * 0.6;
 
-        return (
-          <group key={`window-${i}`}>
-            {/* Window frame */}
-            <mesh position={[xPos, yPos, d / 2 + 0.12]} castShadow>
-              <boxGeometry args={[windowW, windowH, 0.2]} />
-              <meshStandardMaterial color={trimColor} />
-            </mesh>
-            {/* Window glass */}
-            <mesh position={[xPos, yPos, d / 2 + 0.15]}>
-              <boxGeometry args={[windowW - 0.2, windowH - 0.2, 0.1]} />
-              <meshPhysicalMaterial
-                color="#87CEEB"
-                transparent
-                opacity={0.6}
-                metalness={0.1}
-                roughness={0.1}
-                transmission={0.9}
-              />
-            </mesh>
-            {/* Window cross bars */}
-            <mesh position={[xPos, yPos, d / 2 + 0.16]}>
-              <boxGeometry args={[windowW - 0.1, 0.05, 0.05]} />
-              <meshStandardMaterial color={trimColor} />
-            </mesh>
-            <mesh position={[xPos, yPos, d / 2 + 0.16]}>
-              <boxGeometry args={[0.05, windowH - 0.1, 0.05]} />
-              <meshStandardMaterial color={trimColor} />
-            </mesh>
-          </group>
-        );
-      })}
+          return (
+            <group key={`window-${configIndex}-${countIndex}`}>
+              {/* Window frame */}
+              <mesh position={[xPos, yPos, d / 2 + 0.12]} castShadow>
+                <boxGeometry args={[windowW, windowH, 0.2]} />
+                <meshStandardMaterial color={trimColor} />
+              </mesh>
+              {/* Window glass */}
+              <mesh position={[xPos, yPos, d / 2 + 0.15]}>
+                <boxGeometry args={[windowW - 0.1, windowH - 0.1, 0.1]} />
+                <meshPhysicalMaterial
+                  color="#87CEEB"
+                  transparent
+                  opacity={0.6}
+                  metalness={0.1}
+                  roughness={0.1}
+                  transmission={0.9}
+                />
+              </mesh>
+              {/* Window cross bars */}
+              <mesh position={[xPos, yPos, d / 2 + 0.16]}>
+                <boxGeometry args={[windowW - 0.05, 0.05, 0.05]} />
+                <meshStandardMaterial color={trimColor} />
+              </mesh>
+              <mesh position={[xPos, yPos, d / 2 + 0.16]}>
+                <boxGeometry args={[0.05, windowH - 0.05, 0.05]} />
+                <meshStandardMaterial color={trimColor} />
+              </mesh>
+            </group>
+          );
+        })
+      )}
     </group>
   );
 };

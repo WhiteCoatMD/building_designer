@@ -10,7 +10,6 @@ export const ControlPanel = () => {
   const {
     width,
     depth,
-    wallHeight,
     selectedCategory,
     selectedBuildingId,
     hasLoft,
@@ -18,9 +17,8 @@ export const ControlPanel = () => {
     hasGarageDoor,
     hasMetalRoof,
     hasDormer,
-    doors,
-    windows,
-    doorWidth,
+    doorConfigs,
+    windowConfigs,
     wallColor,
     roofColor,
     trimColor,
@@ -28,7 +26,6 @@ export const ControlPanel = () => {
     totalPrice,
     getSelectedBuilding,
     getAvailableSizes,
-    setWallHeight,
     setCategory,
     setBuildingType,
     setSize,
@@ -37,9 +34,10 @@ export const ControlPanel = () => {
     setHasGarageDoor,
     setHasMetalRoof,
     setHasDormer,
-    setDoors,
-    setWindows,
-    setDoorWidth,
+    addDoor,
+    removeDoor,
+    addWindow,
+    removeWindow,
     setWallColor,
     setRoofColor,
     setTrimColor,
@@ -203,27 +201,6 @@ export const ControlPanel = () => {
         </div>
       </div>
 
-      {/* Wall Height */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-          Wall Height
-        </h3>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Height: {wallHeight} ft
-          </label>
-          <input
-            type="range"
-            min="6"
-            max="12"
-            step="1"
-            value={wallHeight}
-            onChange={(e) => setWallHeight(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
-        </div>
-      </div>
-
       {/* Optional Features */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
@@ -316,52 +293,83 @@ export const ControlPanel = () => {
       {/* Doors & Windows */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-          Doors & Windows
+          5. Doors & Windows
         </h3>
 
+        {/* Doors Section */}
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Number of Doors: {doors}
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            Doors
           </label>
-          <input
-            type="range"
-            min="1"
-            max="3"
-            step="1"
-            value={doors}
-            onChange={(e) => setDoors(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+          <div className="space-y-2 mb-3">
+            {doorConfigs.map((doorConfig, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span className="text-sm">
+                  {doorConfig.type === '48-solid-shop' && '48" Solid Shop Door'}
+                  {doorConfig.type === '72-double-shop' && '72" Double Shop Door'}
+                  {doorConfig.type === '36-solid-entry' && '36" Solid Entry Door'}
+                  {doorConfig.type === '36-9lite-entry' && '36" 9-Lite Entry Door'}
+                </span>
+                <button
+                  onClick={() => removeDoor(index)}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+          <select
+            onChange={(e) => {
+              if (e.target.value) {
+                addDoor(e.target.value as any);
+                e.target.value = '';
+              }
+            }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">+ Add Door...</option>
+            <option value="48-solid-shop">48" Solid Shop Door (+$350)</option>
+            <option value="72-double-shop">72" Double Shop Door (+$600)</option>
+            <option value="36-solid-entry">36" Solid Entry Door (+$300)</option>
+            <option value="36-9lite-entry">36" 9-Lite Entry Door (+$350)</option>
+          </select>
         </div>
 
+        {/* Windows Section */}
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Door Width: {doorWidth} ft
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            Windows
           </label>
-          <input
-            type="range"
-            min="3"
-            max="8"
-            step="1"
-            value={doorWidth}
-            onChange={(e) => setDoorWidth(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Number of Windows: {windows}
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="6"
-            step="1"
-            value={windows}
-            onChange={(e) => setWindows(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+          <div className="space-y-2 mb-3">
+            {windowConfigs.map((windowConfig, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span className="text-sm">
+                  {windowConfig.size === '2x3' && '2\' × 3\' Window'}
+                  {windowConfig.size === '3x3' && '3\' × 3\' Window'}
+                </span>
+                <button
+                  onClick={() => removeWindow(index)}
+                  className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+          <select
+            onChange={(e) => {
+              if (e.target.value) {
+                addWindow(e.target.value as any);
+                e.target.value = '';
+              }
+            }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">+ Add Window...</option>
+            <option value="2x3">2' × 3' Window (+$150)</option>
+            <option value="3x3">3' × 3' Window (+$200)</option>
+          </select>
         </div>
       </div>
 
@@ -463,7 +471,6 @@ const QuoteForm = ({
           buildingConfig: {
             width: config.width,
             depth: config.depth,
-            wallHeight: config.wallHeight,
             selectedCategory: config.selectedCategory,
             selectedBuildingId: config.selectedBuildingId,
             hasLoft: config.hasLoft,
@@ -472,9 +479,8 @@ const QuoteForm = ({
             hasGarageDoor: config.hasGarageDoor,
             hasMetalRoof: config.hasMetalRoof,
             hasDormer: config.hasDormer,
-            doors: config.doors,
-            windows: config.windows,
-            doorWidth: config.doorWidth,
+            doorConfigs: config.doorConfigs,
+            windowConfigs: config.windowConfigs,
             wallColor: config.wallColor,
             roofColor: config.roofColor,
             trimColor: config.trimColor,
